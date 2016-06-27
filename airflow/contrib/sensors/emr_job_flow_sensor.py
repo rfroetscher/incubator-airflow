@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import logging
 
 from airflow.contrib.hooks.emr_hook import EmrHook
@@ -28,7 +29,7 @@ class EmrJobFlowSensor(EmrBaseSensor):
     :type job_flow_id: string
     """
 
-    NON_TERMINAL_STATES = ['STARTING', 'BOOTSTRAPPING', 'RUNNING', 'WAITING', 'SHUTTING_DOWN']
+    NON_TERMINAL_STATES = ['STARTING', 'BOOTSTRAPPING', 'RUNNING', 'WAITING', 'TERMINATING']
     FAILED_STATE = 'TERMINATED_WITH_ERRORS'
     template_fields = ['job_flow_id']
     template_ext = ()
