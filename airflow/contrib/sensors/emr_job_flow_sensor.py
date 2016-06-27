@@ -29,7 +29,7 @@ class EmrJobFlowSensor(EmrBaseSensor):
     """
 
     NON_TERMINAL_STATES = ['STARTING', 'BOOTSTRAPPING', 'RUNNING', 'WAITING', 'SHUTTING_DOWN']
-    FAILED_STATE = 'FAILED'
+    FAILED_STATE = 'TERMINATED_WITH_ERRORS'
     template_fields = ['job_flow_id']
     template_ext = ()
 
@@ -44,8 +44,8 @@ class EmrJobFlowSensor(EmrBaseSensor):
     def get_emr_response(self):
         emr = EmrHook(aws_conn_id=self.aws_conn_id).get_conn()
 
-        logging.info('Poking job_flow %s' % self.job_flow_id)
-        return emr.describe_job_flows(JobFlowIds=[self.job_flow_id])
+        logging.info('Poking cluster %s' % self.job_flow_id)
+        return emr.describe_cluster(ClusterId=self.job_flow_id)
 
     def state_from_response(self, response):
-        return response['JobFlows'][0]['ExecutionStatusDetail']['State']
+        return response['Cluster']['Status']['State']
