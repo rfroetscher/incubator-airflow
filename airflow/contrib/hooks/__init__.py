@@ -39,7 +39,6 @@
 from airflow.utils.helpers import import_module_attrs as _import_module_attrs
 
 _hooks = {
-    'aws_hook': ['AwsHook'],
     'ftp_hook': ['FTPHook'],
     'ftps_hook': ['FTPSHook'],
     'vertica_hook': ['VerticaHook'],
