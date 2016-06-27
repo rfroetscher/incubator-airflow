@@ -45,16 +45,18 @@ class EmrHook(AwsHook):
         config.update(job_flow_overrides)
 
         response = self.get_conn().run_job_flow(
-            Name=config['Name'],
-            LogUri=config['LogUri'],
-            ReleaseLabel=config['ReleaseLabel'],
-            Instances=config['Instances'],
+            Name=config.get('Name'),
+            LogUri=config.get('LogUri'),
+            ReleaseLabel=config.get('ReleaseLabel'),
+            Instances=config.get('Instances'),
             Steps=config.get('Steps', []),
-            Applications=config['Applications'],
-            VisibleToAllUsers=config['VisibleToAllUsers'],
-            JobFlowRole=config['JobFlowRole'],
-            ServiceRole=config['ServiceRole'],
-            Tags=config['Tags']
+            BootstrapActions=config.get('BootstrapActions', []),
+            Applications=config.get('Applications'),
+            Configurations=config.get('Configurations', []),
+            VisibleToAllUsers=config.get('VisibleToAllUsers'),
+            JobFlowRole=config.get('JobFlowRole'),
+            ServiceRole=config.get('ServiceRole'),
+            Tags=config.get('Tags')
         )
 
         return response
