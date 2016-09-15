@@ -1342,6 +1342,7 @@ class TaskInstance(Base):
                 task.on_retry_callback(context)
             if self.state == State.FAILED and task.on_failure_callback:
                 task.on_failure_callback(context)
+
         except Exception as e3:
             logging.error("Failed at executing callback")
             logging.exception(e3)
@@ -3164,6 +3165,20 @@ class DAG(BaseDag, LoggingMixin):
         session.commit()
         return run
 
+    @provide_session
+    def handle_failure(self):
+        if self.email_on_failure:
+            ...email
+        if self.failure_callback:
+            self.failure_callback()
+        if self.retry_on_failure:
+            ....TriggerDagRun
+
+    @provide_session
+    def handle_success(self):
+        if self.success_callback:
+            self.success_callback()
+
     @staticmethod
     @provide_session
     def sync_to_db(dag, owner, sync_time, session=None):
@@ -3763,18 +3778,21 @@ class DagRun(Base):
             if any(r.state in (State.FAILED, State.UPSTREAM_FAILED)
                    for r in roots):
                 logging.info('Marking run {} failed'.format(self))
+                dag.handle_failure()
                 self.state = State.FAILED
 
             # if all roots succeeded, the run succeeded
             elif all(r.state in (State.SUCCESS, State.SKIPPED)
                      for r in roots):
                 logging.info('Marking run {} successful'.format(self))
+                dag.hanlde_success()
                 self.state = State.SUCCESS
 
             # if *all tasks* are deadlocked, the run failed
             elif unfinished_tasks and none_depends_on_past and no_dependencies_met:
                 logging.info(
                     'Deadlock; marking run {} failed'.format(self))
+                dag.handle_failure()
                 self.state = State.FAILED
 
             # finally, if the roots aren't done, the dag is still running
